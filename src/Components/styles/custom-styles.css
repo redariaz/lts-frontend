@@ -1,0 +1,14 @@
+.outerContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.loginContainer {
+    padding: 20px;
+    background-color: lightblue;
+    text-align: center;
+    width: 55vh;
+    height: 45vh;
+}
