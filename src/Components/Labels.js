@@ -8,6 +8,13 @@ const appLabels = {
 			signup: "Sign up",
 			login: "Login"
 		}
+	},
+	toastMessage: {
+		labels: {
+			success: "Success",
+			error: "Error",
+			warning: "Warning"
+		}
 	}
 }
 

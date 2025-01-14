@@ -15,7 +15,7 @@
     border-radius: 0.5rem;
     text-align: center;
     width: 55vh;
-    height: 55vh;
+    height: 60vh;
 }
 
 .innerContainer {
@@ -37,4 +37,8 @@
     font-weight: bold;
     font-size: larger;
     background-color: lightblue !important;
+}
+
+.error-border {
+    border: 2px solid red;
 }
