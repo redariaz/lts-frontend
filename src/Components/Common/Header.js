@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
-import './styles/header.css';
+import '../styles/header.css';
 
 const Header = () => {
 
@@ -18,7 +18,7 @@ const Header = () => {
                     <h2>Leave Tracking System</h2>
                 </div>
             </div>
-            <div className="sidebarWrapper">
+            <div className={`sidebarWrapper ${collapsed ? 'collapsed' : ''}`}>
                 <Sidebar collapsed={collapsed} className="sidebar">
                     <Menu>
                         <MenuItem>Dashboard</MenuItem>

@@ -1,9 +1,9 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import AuthForm from './Components/AuthForm';
-import { ToastWrapper } from './Components/NotifyUser';
+import { ToastWrapper } from './Components/Common/NotifyUser';
 import Home from './Components/Home';
-import Header from './Components/Header';
+import Header from './Components/Common/Header';
 
 function App() {
   return (
