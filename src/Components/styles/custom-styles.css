@@ -10,12 +10,10 @@
 
 .loginContainer {
     padding: 20px;
-    /* background-color: whitesmoke; */
     background: rgba(255, 255, 255, 0.8);
     border-radius: 0.5rem;
     text-align: center;
     width: 55vh;
-    height: 60vh;
 }
 
 .innerContainer {
@@ -24,8 +22,8 @@
     padding: 0 1rem 0 1rem;
 }
 
-.passwordContainer {
-    margin-top: 2rem;
+.passwordContainer, .confirmPasswordContainer {
+    margin-top: 1.5rem;
 }
 
 .form-control, .form-control-sm, .form-check {
@@ -41,4 +39,9 @@
 
 .error-border {
     border: 2px solid red;
+}
+
+.contentContainer {
+    margin-left: 70px;
+    padding: 20px;
 }

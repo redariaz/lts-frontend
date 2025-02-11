@@ -2,7 +2,8 @@ const appLabels = {
 	signup: {
 		labels: {
 			email: "Email",
-			password: "Password"
+			password: "Password",
+			confirmPassword: "Confirm Password"
 		},
 		button: {
 			signup: "Sign up",

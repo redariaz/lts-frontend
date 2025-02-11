@@ -4,16 +4,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { Button } from 'react-bootstrap';
 import appLabels from './Labels';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import NotifyUser from './NotifyUser';
 
 function AuthForm({ isLogin }) {
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState(false);
   const [errorFields, setErrorFields] = useState({});
+  const navigate = useNavigate();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -25,14 +28,24 @@ function AuthForm({ isLogin }) {
     setError({ ...error, password: false });
   }
 
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+    setError({ ...error, confirmPassword: false });
+  }
+
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  }
+
+  const handleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   }
 
   const handleSubmitForm = () => {
     if (validateForm) {
       console.log("handleSubmit", 41);
       NotifyUser(appLabels.toastMessage.labels.success, "Login successful");
+      navigate("/home");
     } else {
       console.log("errorMsg", 48)
     }
@@ -83,7 +96,7 @@ function AuthForm({ isLogin }) {
 
   return (
     <div className='outerContainer'>
-      <div className="loginContainer">
+      <div className="loginContainer" style={{ height: isLogin ? "55vh" : "60vh"}}>
         <form>
           <h2 style={{ fontWeight: "bold" }}>{isLogin ? "Login" : "Sign up!"}</h2>
           <div className="innerContainer">
@@ -99,7 +112,7 @@ function AuthForm({ isLogin }) {
                 onChange={handleEmailChange}
               />
             </div>
-            <div className="passwordContainer">
+            <div className="passwordContainer" style={{ marginTop: isLogin ? "2.5rem" : "1.5rem"}}>
               <label>{appLabels.signup.labels.password}</label>
               <div style={{ position: 'relative' }}>
                 <input
@@ -128,6 +141,37 @@ function AuthForm({ isLogin }) {
                 )}
               </div>
             </div>
+            {!isLogin && (
+              <div className="confirmPasswordContainer">
+                <label>{appLabels.signup.labels.confirmPassword}</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    id='confirmPassword'
+                    name='confirmPassword'
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    className="form-control form-control-sm"
+                    placeholder='Re-enter password'
+                    value={confirmPassword}
+                    onChange={handleConfirmPasswordChange}
+                  />
+                  {confirmPassword && (
+                    <span
+                      className='passwordToggleIcon'
+                      onClick={handleConfirmPasswordVisibility}
+                      style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <i className={`fa-regular ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
 						{isLogin && (
 							<div className='form-check'>
 								<input
