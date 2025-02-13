@@ -31,10 +31,13 @@
 }
 
 .cardHeader {
-    align-items: center;
-    font-weight: bold;
+    font-weight: 600;
     font-size: larger;
-    background-color: lightblue !important;
+    background-color: rgb(189, 219, 246) !important;
+}
+
+.classification_star {
+    color: red;
 }
 
 .error-border {
@@ -42,6 +45,22 @@
 }
 
 .contentContainer {
-    margin-left: 70px;
+    margin-left: 85px;
     padding: 20px;
+}
+
+.MuiInputBase-root {
+    height: 40px;
+}
+
+.MuiFormLabel-root.MuiInputLabel-root {
+    line-height: 0.89em;
+}
+
+.react-datepicker-wrapper {
+    width: 100%;
+}
+
+.buttonContainer {
+    text-align: right;
 }

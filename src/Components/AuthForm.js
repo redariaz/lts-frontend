@@ -3,9 +3,9 @@ import './styles/custom-styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { Button } from 'react-bootstrap';
-import appLabels from './Common/Labels';
+import appLabels from './CommonComponents/Labels';
 import { Link, useNavigate } from 'react-router-dom';
-import NotifyUser from './Common/NotifyUser';
+import NotifyUser from './CommonComponents/NotifyUser';
 
 function AuthForm({ isLogin }) {
 
