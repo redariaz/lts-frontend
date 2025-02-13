@@ -7,7 +7,7 @@ import appLabels from './CommonComponents/Labels';
 import { Link, useNavigate } from 'react-router-dom';
 import NotifyUser from './CommonComponents/NotifyUser';
 
-function AuthForm({ isLogin }) {
+function Login({ isLogin }) {
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -195,4 +195,4 @@ function AuthForm({ isLogin }) {
   )
 }
 
-export default AuthForm;
+export default Login;
