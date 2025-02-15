@@ -3,6 +3,9 @@ import { Button, Card, Col, Form, Row } from 'react-bootstrap'
 import appLabels from './CommonComponents/Labels'
 import { Autocomplete, TextField } from '@mui/material';
 import CustomReactDatePicker from './CommonComponents/CustomReactDatePicker';
+import axios from 'axios';
+import END_POINT from './CommonComponents/END_POINT';
+import Spinner from './Spinner/Spinner';
 
 const UserProfile = () => {
 
@@ -13,19 +16,23 @@ const UserProfile = () => {
   const [username, setUsername] = useState();
   const [email, setEmail] = useState();
   const [joiningDate, setJoiningDate] = useState();
-  // const [showJoiningDateCalendarIcon, setShowJoiningDateCalendarIcon] = useState(true);
   const [location, setLocation] = useState();
+  const [locationList, setLocationList] = useState([]);
   const [department, setDepartment] = useState();
+  const [departmentList, setDepartmentList] = useState([]);
   const [role, setRole] = useState();
+  const [rolesList, setRolesList] = useState([]);
   const [shiftTime, setShiftTime] = useState();
-  const [gender, setGender] = useState("Male");
+  const [shiftsList, setShiftList] = useState([]);
+  const [gender, setGender] = useState("");
   const [dob, setDob] = useState();
   const [showDobCalendarIcon, setShowDobCalendarIcon] = useState(true);
-  const [maritalStatus, setMaritalStatus] = useState("Married");
+  const [maritalStatus, setMaritalStatus] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const options = [
-    { value: 'miss', label: 'Miss' },
-    { value: 'mrs.', label: 'Mrs.' },
-    { value: 'mr.', label: 'Mr.' },
+    { value: 'Miss', label: 'Miss' },
+    { value: 'Mrs.', label: 'Mrs.' },
+    { value: 'Mr.', label: 'Mr.' },
   ]
 
   useEffect(() => {
@@ -35,21 +42,95 @@ const UserProfile = () => {
     const year = inputDate.getFullYear();
     const formattedDate = `${year}-${month}-${date}`;
     setJoiningDate(formattedDate);
-    generateRandomCode(); // Generate initial random code when component mounts
+    generateRandomCode();
   }, []);
 
+  useEffect(() => {
+    const getAllLocations = async() => {
+      setIsLoading(true);
+      const response = await axios.get(`${END_POINT.ltsUserURL}/locations/get-all-locations`);
+      try {
+        if (response.data.statusCode === 200) {
+          setLocationList(response.data.data);
+        }
+      } catch (error) {
+        console.error("error")
+      }
+      setIsLoading(false);
+    }
+    const getAllDepartments = async() => {
+      setIsLoading(true);
+      const response = await axios.get(`${END_POINT.ltsUserURL}/dept/get-all-departments`);
+      try {
+        if (response.data.statusCode === 200) {
+          setDepartmentList(response.data.data);
+        }
+      } catch (error) {
+        console.error("error");
+      }
+      setIsLoading(false);
+    }
+    const getAllShifts = async() => {
+      setIsLoading(true);
+      const response = await axios.get(`${END_POINT.ltsUserURL}/shifts/get-all-shifts`);
+      try {
+        if (response.data.statusCode === 200) {
+          setShiftList(response.data.data);
+        }
+      } catch (error) {
+        console.error("error");
+      }
+      setIsLoading(false);
+    }
+    getAllLocations();
+    getAllDepartments();
+    getAllShifts();
+  }, []);
+
+  useEffect(() => {
+    if (department) {
+      const getRolesByDeptId = async() => {
+        setIsLoading(true);
+        const response = await axios.get(`${END_POINT.ltsUserURL}/roles/get-roles-by-deptId/${department}`);
+        try {
+          if (response.data.statusCode === 200) {
+            setRolesList(response.data.data);
+          }
+        } catch (error) {
+          console.error("error");
+        }
+        setIsLoading(false);
+      }
+      getRolesByDeptId();
+    }
+  }, [department]);
+
+  const resetForm = () => {
+    setTitle("");
+    setFirstName("");
+    setLastName("");
+    setUsername("");
+    setEmail("");
+    setLocation("");
+    setDepartment("");
+    setRole("");
+    setShiftTime("");
+    setGender("");
+    setDob("");
+    setMaritalStatus("");
+  }
+
   const generateRandomCode = () => {
-    // Generate random number between 1111 and 9999
     const randomCode = Math.floor(Math.random() * (9999 - 1111 + 1)) + 1111;
     setEmpCode(randomCode.toString());
   };
 
   const handleRefreshClick = () => {
-    generateRandomCode(); // Refresh code when icon is clicked
+    generateRandomCode();
   };
 
-  const handleTitleChange = (e) => {
-    setTitle(e.target.value);
+  const handleTitleChange = (e, data) => {
+    setTitle(data.value);
   }
 
   const handleFirstNameChange = (e) => {
@@ -65,31 +146,12 @@ const UserProfile = () => {
     setEmail(e.target.value + "@galaxe.com");
   }
 
-  // const handleEmailChange = (e) => {
-  //   setEmail(e.target.value);
-  // }
-
-  // const handleJoiningDateChange = (date) => {
-  //   if (date) {
-  //     const inputDate = new Date(date);
-  //     const day = String(inputDate.getDate()).padStart(2, "0");
-  //     const month = String(inputDate.getMonth() + 1).padStart(2, "0");
-  //     const year = String(inputDate.getFullYear());
-  //     const formattedDate = `${year}-${month}-${day}`;
-  //     setJoiningDate(formattedDate);
-  //     setShowJoiningDateCalendarIcon(false)
-  //   } else {
-  //     setJoiningDate("");
-  //     setShowJoiningDateCalendarIcon(true);
-  //   }
-  // }
-
   const handleLocationChange = (e) => {
     setLocation(e.target.value);
   }
 
-  const handleDeptChange = (e) => {
-    setDepartment(e.target.value);
+  const handleDeptChange = (e, data) => {
+    setDepartment(data ? data.value : "");
   }
 
   const handleRoleChange = (e) => {
@@ -121,6 +183,34 @@ const UserProfile = () => {
 
   const handleMaritalStatus = (e) => {
     setMaritalStatus(e.target.value);
+  }
+
+  const getLocationList = () => {
+    return locationList.map((locations) => ({
+      value: locations.id,
+      label: locations.location
+    }));
+  }
+
+  const getDepartmentList = () => {
+    return departmentList.map((dept) => ({
+      value: dept.id,
+      label: dept.dept
+    }));
+  }
+
+  const getRolesList = () => {
+    return rolesList.map((roles) => ({
+        value: roles.id,
+        label: roles.role
+    }));
+  }
+
+  const getShiftsList = () => {
+    return shiftsList.map((shifts) => ({
+      value: shifts.id,
+      label: shifts.shiftTime
+    }));
   }
 
   return (
@@ -215,7 +305,7 @@ const UserProfile = () => {
                       InputProps={{
                         endAdornment: (
                           <i 
-                            class="fa-solid fa-arrows-rotate"
+                            className="fa-solid fa-arrows-rotate"
                             onClick={handleRefreshClick}
                             style={{ cursor: 'pointer' }}
                           />
@@ -308,7 +398,7 @@ const UserProfile = () => {
                       name="location"
                       id="location"
                       value={location}
-                      options={options}
+                      options={getLocationList()}
                       onChange={handleLocationChange}
                       renderInput={(params) => <TextField {...params} label="Location" />}
                     />
@@ -330,7 +420,7 @@ const UserProfile = () => {
                       name="dept"
                       id="dept"
                       value={department}
-                      options={options}
+                      options={getDepartmentList()}
                       onChange={handleDeptChange}
                       renderInput={(params) => <TextField {...params} label="Department" />}
                     />
@@ -350,8 +440,9 @@ const UserProfile = () => {
                       name="role"
                       id="role"
                       value={role}
-                      options={options}
+                      options={department ? getRolesList() : []}
                       onChange={handleRoleChange}
+                      disabled={department ? false : true}
                       renderInput={(params) => <TextField {...params} label="Role" />}
                     />
                   </Col>
@@ -372,7 +463,7 @@ const UserProfile = () => {
                       name="shiftTime"
                       id="shiftTime"
                       value={shiftTime}
-                      options={options}
+                      options={getShiftsList()}
                       onChange={handleShiftTimeChange}
                       renderInput={(params) => <TextField {...params} label="Shift Time" />}
                     />
@@ -496,7 +587,7 @@ const UserProfile = () => {
                     <Button>
                       {appLabels.commonLabels.submit}
                     </Button>{" "}
-                    <Button variant='secondary'>
+                    <Button variant='secondary' onClick={resetForm}>
                       {appLabels.commonLabels.reset}
                     </Button>
                   </Col>
@@ -506,6 +597,8 @@ const UserProfile = () => {
           </Form>
         </Card.Body>
       </Card>
+
+      <Spinner loading={isLoading} />
     </div>
   )
 }
