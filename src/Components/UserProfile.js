@@ -30,9 +30,9 @@ const UserProfile = () => {
   const [maritalStatus, setMaritalStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const options = [
-    { value: 'Miss', label: 'Miss' },
-    { value: 'Mrs.', label: 'Mrs.' },
     { value: 'Mr.', label: 'Mr.' },
+    { value: 'Mrs.', label: 'Mrs.' },
+    { value: 'Miss', label: 'Miss' },
   ]
 
   useEffect(() => {
