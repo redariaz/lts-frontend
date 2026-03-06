@@ -96,7 +96,7 @@ function Login({ isLogin }) {
 
   return (
     <div className='outerContainer'>
-      <div className="loginContainer" style={{ height: isLogin ? "55vh" : "60vh"}}>
+      <div className="loginContainer" style={{ height: isLogin ? "70vh" : "75vh"}}>
         <form>
           <h2 style={{ fontWeight: "bold" }}>{isLogin ? "Login" : "Sign up!"}</h2>
           <div className="innerContainer">

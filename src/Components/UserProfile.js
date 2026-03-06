@@ -6,23 +6,29 @@ import CustomReactDatePicker from './CommonComponents/CustomReactDatePicker';
 import axios from 'axios';
 import END_POINT from './CommonComponents/END_POINT';
 import Spinner from './Spinner/Spinner';
+import NotifyUser from './CommonComponents/NotifyUser';
 
 const UserProfile = () => {
 
-  const [title, setTitle] = useState();
+  const [title, setTitle] = useState("");
+  const [selectedTitle, setSelectedTitle] = useState(null);
   const [firstName, setFirstName] = useState();
   const [lastName, setLastName] = useState();
   const [empCode, setEmpCode] = useState();
   const [username, setUsername] = useState();
   const [email, setEmail] = useState();
   const [joiningDate, setJoiningDate] = useState();
-  const [location, setLocation] = useState();
+  const [locationName, setLocationName] = useState();
+  const [selectedLocationName, setSelectedLocationName] = useState(null);
   const [locationList, setLocationList] = useState([]);
-  const [department, setDepartment] = useState();
+  const [deptName, setDeptName] = useState();
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [departmentList, setDepartmentList] = useState([]);
-  const [role, setRole] = useState();
+  const [roleName, setRoleName] = useState();
+  const [selectedRole, setSelectedRole] = useState(null);
   const [rolesList, setRolesList] = useState([]);
   const [shiftTime, setShiftTime] = useState();
+  const [selectedShiftTime, setSelectedShiftTime] = useState(null);
   const [shiftsList, setShiftList] = useState([]);
   const [gender, setGender] = useState("");
   const [dob, setDob] = useState();
@@ -40,15 +46,16 @@ const UserProfile = () => {
     const date = String(inputDate.getDate()).padStart(2, "0");
     const month = String(inputDate.getMonth() + 1).padStart(2, "0");
     const year = inputDate.getFullYear();
-    const formattedDate = `${year}-${month}-${date}`;
+    const formattedDate = `${year}-${month}-${date}`; 
     setJoiningDate(formattedDate);
+    
     generateRandomCode();
   }, []);
 
   useEffect(() => {
     const getAllLocations = async() => {
       setIsLoading(true);
-      const response = await axios.get(`${END_POINT.ltsUserURL}/locations/get-all-locations`);
+      const response = await axios.get(`${END_POINT.ltsUserURL}/location`);
       try {
         if (response.data.statusCode === 200) {
           setLocationList(response.data.data);
@@ -60,7 +67,7 @@ const UserProfile = () => {
     }
     const getAllDepartments = async() => {
       setIsLoading(true);
-      const response = await axios.get(`${END_POINT.ltsUserURL}/dept/get-all-departments`);
+      const response = await axios.get(`${END_POINT.ltsUserURL}/departments`);
       try {
         if (response.data.statusCode === 200) {
           setDepartmentList(response.data.data);
@@ -72,7 +79,7 @@ const UserProfile = () => {
     }
     const getAllShifts = async() => {
       setIsLoading(true);
-      const response = await axios.get(`${END_POINT.ltsUserURL}/shifts/get-all-shifts`);
+      const response = await axios.get(`${END_POINT.ltsUserURL}/shifts`);
       try {
         if (response.data.statusCode === 200) {
           setShiftList(response.data.data);
@@ -88,10 +95,10 @@ const UserProfile = () => {
   }, []);
 
   useEffect(() => {
-    if (department) {
+    if (selectedDepartment) {
       const getRolesByDeptId = async() => {
         setIsLoading(true);
-        const response = await axios.get(`${END_POINT.ltsUserURL}/roles/get-roles-by-deptId/${department}`);
+        const response = await axios.get(`${END_POINT.ltsUserURL}/roles/department/${selectedDepartment?.value}`);
         try {
           if (response.data.statusCode === 200) {
             setRolesList(response.data.data);
@@ -103,34 +110,77 @@ const UserProfile = () => {
       }
       getRolesByDeptId();
     }
-  }, [department]);
+  }, [selectedDepartment]);
+
+  const handleSubmit = async() => {
+    setIsLoading(true);
+    const payload = {
+      firstName: firstName,
+      lastName: lastName,
+      empCode: empCode,
+      username: username,
+      email: email,
+      joiningDate: joiningDate,
+      locationName: selectedLocationName?.label,
+      deptName: selectedDepartment?.label,
+      roleName: selectedRole?.label,
+      shiftTime: selectedShiftTime?.inputLabel,
+      gender: gender.toUpperCase(),
+      dob: dob,
+      maritalStatus: maritalStatus.toUpperCase(),
+      createdDate: new Date(),
+      modifiedDate: new Date()
+    };
+    console.log(payload, "payload")
+    try {
+      const response = await axios.post(`${END_POINT.ltsUserURL}/users/create-user`, payload);
+      if (response.data.statusCode === 201) {
+        NotifyUser(appLabels.toastMessage.labels.success, response.data.message);
+        resetForm();
+        generateRandomCode();
+        setIsLoading(false);
+      }
+    } catch (error) {
+      if (error.response) {
+        NotifyUser(appLabels.toastMessage.labels.error, error.response.data.message);
+      }
+    }
+    setIsLoading(false);
+  }
 
   const resetForm = () => {
     setTitle("");
+    setSelectedTitle(null);
     setFirstName("");
     setLastName("");
     setUsername("");
     setEmail("");
-    setLocation("");
-    setDepartment("");
-    setRole("");
+    setLocationName("");
+    setSelectedLocationName(null);
+    setDeptName("");
+    setSelectedDepartment(null);
+    setRoleName("");
+    setSelectedRole(null);
     setShiftTime("");
+    setSelectedShiftTime(null);
     setGender("");
     setDob("");
+    setShowDobCalendarIcon(true);
     setMaritalStatus("");
+    generateRandomCode();
   }
 
   const generateRandomCode = () => {
     const randomCode = Math.floor(Math.random() * (9999 - 1111 + 1)) + 1111;
-    setEmpCode(randomCode.toString());
+    setEmpCode(randomCode);
   };
 
   const handleRefreshClick = () => {
     generateRandomCode();
   };
 
-  const handleTitleChange = (e, data) => {
-    setTitle(data.value);
+  const handleTitleChange = (event, newValue) => {
+    setSelectedTitle(newValue);
   }
 
   const handleFirstNameChange = (e) => {
@@ -143,23 +193,24 @@ const UserProfile = () => {
 
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
-    setEmail(e.target.value + "@galaxe.com");
+    setEmail(e.target.value + "@company.com");
   }
 
-  const handleLocationChange = (e) => {
-    setLocation(e.target.value);
+  const handleLocationChange = (event, newInputValue) => {
+    setSelectedLocationName(newInputValue);
   }
 
-  const handleDeptChange = (e, data) => {
-    setDepartment(data ? data.value : "");
+  const handleDeptChange = (event, newValue) => {
+    setSelectedDepartment(newValue);
   }
 
-  const handleRoleChange = (e) => {
-    setRole(e.target.value);
+  const handleRoleChange = (event, newInputValue) => {
+    setSelectedRole(newInputValue);
   }
 
-  const handleShiftTimeChange = (e) => {
-    setShiftTime(e.target.value);
+  const handleShiftTimeChange = (event, newInputValue) => {
+    setSelectedShiftTime(newInputValue);
+    console.log(newInputValue, "payload")
   }
 
   const handleGenderChange = (e) => {
@@ -181,35 +232,42 @@ const UserProfile = () => {
     }
   }
 
+  const getMaxDate = () => {
+      const today = new Date();
+      today.setFullYear(today.getFullYear() - 18);
+      return today;
+    }
+
   const handleMaritalStatus = (e) => {
     setMaritalStatus(e.target.value);
   }
 
   const getLocationList = () => {
     return locationList.map((locations) => ({
-      value: locations.id,
-      label: locations.location
+      value: locations.locId,
+      label: locations.locationName
     }));
   }
 
   const getDepartmentList = () => {
     return departmentList.map((dept) => ({
-      value: dept.id,
-      label: dept.dept
+      value: dept.deptId,
+      label: dept.deptName
     }));
   }
 
   const getRolesList = () => {
     return rolesList.map((roles) => ({
-        value: roles.id,
-        label: roles.role
+      value: roles.roleId,
+      label: roles.roleName
     }));
   }
 
   const getShiftsList = () => {
     return shiftsList.map((shifts) => ({
-      value: shifts.id,
-      label: shifts.shiftTime
+      value: shifts.shiftId,
+      inputLabel: shifts.shiftTime,
+      label: shifts.shiftName + " - " + shifts.shiftTime
     }));
   }
 
@@ -236,10 +294,14 @@ const UserProfile = () => {
                     <Autocomplete
                       name="title"
                       id="title"
-                      value={title}
+                      value={selectedTitle}
+                      inputValue={title}
+                      onInputChange={(event, newInputValue) => {
+                        setTitle(newInputValue ?? "");
+                      }}
                       options={options}
                       onChange={handleTitleChange}
-                      renderInput={(params) => <TextField {...params} label="Title" />}
+                      renderInput={(params) => <TextField {...params} label={appLabels.userProfile.labels.title} />}
                     />
                   </Col>
                 </Row>
@@ -259,7 +321,7 @@ const UserProfile = () => {
                       id="firstName"
                       value={firstName}
                       onChange={handleFirstNameChange}
-                      label="First Name"
+                      label={appLabels.userProfile.labels.firstName}
                     />
                   </Col>
                 </Row>
@@ -281,7 +343,7 @@ const UserProfile = () => {
                       id="lastName"
                       value={lastName}
                       onChange={handleLastNameChange}
-                      label="Last Name"
+                      label={appLabels.userProfile.labels.lastName}
                     />
                   </Col>
                 </Row>
@@ -301,7 +363,7 @@ const UserProfile = () => {
                       id="empCode"
                       value={empCode}
                       aria-readonly
-                      label="Emp Code"
+                      // label="Emp Code"
                       InputProps={{
                         endAdornment: (
                           <i 
@@ -332,7 +394,7 @@ const UserProfile = () => {
                       id="username"
                       value={username}
                       onChange={handleUsernameChange}
-                      label="Username"
+                      label={appLabels.userProfile.labels.username}
                     />
                   </Col>
                 </Row>
@@ -353,7 +415,7 @@ const UserProfile = () => {
                       name="email"
                       id="email"
                       value={email}
-                      label="Email"
+                      label={appLabels.userProfile.labels.email}
                       InputLabelProps={{
                         shrink: !!email
                       }}
@@ -377,9 +439,10 @@ const UserProfile = () => {
                       id="joiningDate"
                       selected={joiningDate}
                       // onChange={handleJoiningDateChange}
-                      showCalendarIcon={true}
+                      // showCalendarIcon={true}
                       minDate={new Date()}
                       maxDate={new Date()}
+                      disabled={true}
                       isClearable={false}
                     />
                   </Col>
@@ -397,10 +460,11 @@ const UserProfile = () => {
                     <Autocomplete
                       name="location"
                       id="location"
-                      value={location}
+                      value={selectedLocationName}
+                      inputValue={locationName}
                       options={getLocationList()}
                       onChange={handleLocationChange}
-                      renderInput={(params) => <TextField {...params} label="Location" />}
+                      renderInput={(params) => <TextField {...params} label={appLabels.userProfile.labels.location} />}
                     />
                   </Col>
                 </Row>
@@ -419,10 +483,11 @@ const UserProfile = () => {
                     <Autocomplete
                       name="dept"
                       id="dept"
-                      value={department}
+                      value={selectedDepartment}
+                      inputValue={deptName}
                       options={getDepartmentList()}
                       onChange={handleDeptChange}
-                      renderInput={(params) => <TextField {...params} label="Department" />}
+                      renderInput={(params) => <TextField {...params} label={appLabels.userProfile.labels.dept} />}
                     />
                   </Col>
                 </Row>
@@ -437,13 +502,14 @@ const UserProfile = () => {
                   </Col>
                   <Col md={6}>
                     <Autocomplete
-                      name="role"
-                      id="role"
-                      value={role}
-                      options={department ? getRolesList() : []}
+                      name="roleName"
+                      id="roleName"
+                      value={selectedRole}
+                      inputValue={roleName}
+                      options={selectedDepartment ? getRolesList() : []}
                       onChange={handleRoleChange}
-                      disabled={department ? false : true}
-                      renderInput={(params) => <TextField {...params} label="Role" />}
+                      disabled={selectedDepartment ? false : true}
+                      renderInput={(params) => <TextField {...params} label={appLabels.userProfile.labels.role} />}
                     />
                   </Col>
                 </Row>
@@ -462,10 +528,11 @@ const UserProfile = () => {
                     <Autocomplete
                       name="shiftTime"
                       id="shiftTime"
-                      value={shiftTime}
+                      value={selectedShiftTime}
+                      inputValue={shiftTime}
                       options={getShiftsList()}
                       onChange={handleShiftTimeChange}
-                      renderInput={(params) => <TextField {...params} label="Shift Time" />}
+                      renderInput={(params) => <TextField {...params} label={appLabels.userProfile.labels.shiftTime} />}
                     />
                   </Col>
                 </Row>
@@ -535,7 +602,12 @@ const UserProfile = () => {
                       id="dob"
                       selected={dob}
                       onChange={handleDobChange}
-                      maxDate={new Date()}
+                      maxDate={getMaxDate()}
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                      yearDropdownItemNumber={100}
+                      scrollableYearDropdown
                       showCalendarIcon={showDobCalendarIcon}
                       isClearable={dob ? true : false}
                     />
@@ -550,7 +622,7 @@ const UserProfile = () => {
                       <span className="classification_star">*</span>
                     </label>
                   </Col>
-                  <Col md={2}>
+                  <Col md={3}>
                     <label>
                       <input
                         type='radio'
@@ -584,10 +656,10 @@ const UserProfile = () => {
                 <Row>
                   <Col md={9}></Col>
                   <Col md={3}>
-                    <Button>
+                    <Button onClick={handleSubmit}>
                       {appLabels.commonLabels.submit}
                     </Button>{" "}
-                    <Button variant='secondary' onClick={resetForm}>
+                    <Button type="button" variant='secondary' onClick={resetForm}>
                       {appLabels.commonLabels.reset}
                     </Button>
                   </Col>

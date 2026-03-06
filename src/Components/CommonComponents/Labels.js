@@ -16,9 +16,9 @@ const appLabels = {
 	},
 	toastMessage: {
 		labels: {
-			success: "Success",
-			error: "Error",
-			warning: "Warning"
+			success: "success",
+			error: "error",
+			warning: "warning"
 		}
 	},
 	userProfile: {

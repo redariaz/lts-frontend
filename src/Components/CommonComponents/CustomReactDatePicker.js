@@ -18,12 +18,19 @@ function CustomReactDatePicker({
     const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
     const toggleDatePicker = () => {
+        if (disabled) return;
         setIsDatePickerOpen(!isDatePickerOpen);
     };
 
     const closeDatePicker = () => {
         setIsDatePickerOpen(false);
     };
+
+    const getMaxDateFor18Years = () => {
+        const today = new Date();
+        today.setFullYear(today.getFullYear() - 18);
+        return today;
+    }
 
     useEffect(() => {
         if (selected !== "") {
@@ -40,11 +47,17 @@ function CustomReactDatePicker({
             className="custom-datepicker"
             isClearable={isClearable}
             autoComplete="off"
-            open={isDatePickerOpen}
+            open={isDatePickerOpen && !disabled}
             onClickOutside={closeDatePicker}
             disabled={disabled}
-            maxDate={maxDate}
+            maxDate={getMaxDateFor18Years()}
             minDate={minDate}
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            yearDropdownItemNumber={100}
+            scrollableYearDropdown
+            dateFormat="yyyy-MM-dd"
             customInput={
                 <div>
                     <input
@@ -52,7 +65,9 @@ function CustomReactDatePicker({
                         placeholder={
                             selected ? selected : "dd/mm/yyyy"
                         }
-                        onClick={toggleDatePicker}
+                        onClick={() => {
+                            if (!disabled) toggleDatePicker();
+                        }}
                     />
                     {showCalendarIcon && (
                         <span
