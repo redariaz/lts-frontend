@@ -5,7 +5,7 @@
     background-color: #05A;
     color: white;
     text-align: center;
-    position: relative;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -16,20 +16,6 @@
 .titleContainer {
     flex-grow: 1;
     text-align: center;
-}
-
-.sidebarWrapper {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    top: 10vh;
-    left: 0;
-    height: 100%;
-}
-
-.sidebar {
-    height: 100%;
-    background-color: rgb(206, 203, 203);
 }
 
 .toggleButton {

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
+import { Menu, MenuItem } from 'react-pro-sidebar';
 import '../styles/header.css';
+import '../styles/sidebar.css';
 import { Link } from 'react-router-dom';
 import { Dashboard, AccountCircle, Settings, Schedule, HomeWork, CalendarMonth, Flight } from '@mui/icons-material';
+import CommonSidebar from './Sidebar';
 
 const Header = () => {
 
@@ -20,8 +22,8 @@ const Header = () => {
                     <h2>Leave Tracking System</h2>
                 </div>
             </div>
-            <div className={`sidebarWrapper ${collapsed ? 'collapsed' : ''}`}>
-                <Sidebar collapsed={collapsed} className="sidebar">
+            <div className='sidebarWrapper'>
+                <CommonSidebar collapsed={collapsed ? true : false}>
                     <Menu>
                         <MenuItem component={<Link to="/home"/>} icon={<Dashboard />}>Dashboard</MenuItem>
                         <MenuItem icon={<Schedule />}>Leave Requests</MenuItem>
@@ -31,7 +33,7 @@ const Header = () => {
                         <MenuItem component={<Link to="/user-profile"/>} icon={<AccountCircle />}>Profile</MenuItem>
                         <MenuItem icon={<Settings />}>Settings</MenuItem>
                     </Menu>
-                </Sidebar>
+                </CommonSidebar>
             </div>
         </div>
     )
