@@ -160,7 +160,6 @@ const UserProfile = () => {
     getAllLocations();
     getAllDepartments();
     getAllShifts();
-    getAllUsers();
   }, []);
 
   useEffect(() => {
