@@ -6,6 +6,9 @@ import { Button } from 'react-bootstrap';
 import appLabels from './CommonComponents/Labels';
 import { Link, useNavigate } from 'react-router-dom';
 import NotifyUser from './CommonComponents/NotifyUser';
+import Spinner from './Spinner/Spinner';
+import axios from 'axios';
+import END_POINT from './CommonComponents/END_POINT';
 
 function Login({ isLogin }) {
 
@@ -14,6 +17,7 @@ function Login({ isLogin }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [errorFields, setErrorFields] = useState({});
   const navigate = useNavigate();
@@ -41,11 +45,28 @@ function Login({ isLogin }) {
     setShowConfirmPassword(!showConfirmPassword);
   }
 
-  const handleSubmitForm = () => {
+  const handleSubmitForm = async () => {
     if (validateForm) {
-      console.log("handleSubmit", 41);
-      NotifyUser(appLabels.toastMessage.labels.success, "Login successful");
-      navigate("/home");
+      setIsLoading(true);
+      const payload = {
+        email: email,
+        password: password
+      }
+      console.log("handleSubmit", payload);
+      try {
+        const response = await axios.post(`${END_POINT.ltsUserURL}/auth/login`, payload);
+        console.log(response, "response.data")
+        if (response.data.statusCode === 200) {
+          NotifyUser(appLabels.toastMessage.labels.success, "Login successful");
+          navigate("/home");
+          setIsLoading(false);
+        }
+      } catch (error) {
+        if (error.response) {
+          NotifyUser(appLabels.toastMessage.labels.error, error.response.data.message);
+        }
+      }
+      setIsLoading(false);
     } else {
       console.log("errorMsg", 48)
     }
@@ -191,6 +212,8 @@ function Login({ isLogin }) {
 					</small>
         </form>
       </div>
+
+      <Spinner loading={isLoading} />
     </div>
   )
 }

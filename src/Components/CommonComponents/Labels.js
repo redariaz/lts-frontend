@@ -1,7 +1,9 @@
 const appLabels = {
 	commonLabels: {
 		submit: "Submit",
-		reset: "Reset"
+		reset: "Reset",
+		update: "Update",
+		cancel: "Cancel"
 	},
 	signup: {
 		labels: {
